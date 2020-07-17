@@ -34,6 +34,19 @@ SQL Alchemy has two distinct components `core` and `Object Relational Mapper(ORM
 We are going to use [ORM](https://docs.sqlalchemy.org/en/13/orm/tutorial.html) to accomplish our tasks as it is the developer's charm !!
 
 
+## Choice of Data Base - SQLite
+
+SQLite is a serverless Database engine (software library) that allows applications to interact with the database (stored as a single file) without any server process (in contrast to other DB engines like PostgreSQL, MySQL etc.)
+
+<div align="center">
+<p align="center">
+   <img src="Images/sqlite-architecture.png" alt="sqlite-architecture"/>
+</p>
+</div>
+
+As a cherry on top, sqlite comes as preinstalled in recent MAC OS versions.
+Because of all of these advantages, SQLite is chosen as DB for this project.
+
 # Analysis
 ## Climate Analysis and Exploration
 
