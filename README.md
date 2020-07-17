@@ -1,10 +1,33 @@
-# What about surfing in Honolulu, Hawaii ? Is this a good time ?
+# Surfs Up! - Deep dive in SQL Alchemy
 
-Imagine, You've decided to treat yourself to a long holiday vacation in Honolulu, Hawaii! 
-To help with your trip planning, you need to do some climate analysis on the area. 
-No worries, I shall help you with that!
+Imagine, You've decided to treat yourself with a long holiday vacation in Honolulu, Hawaii! 
+To help with your trip planning, you need to do some climate analysis on the area. What about, doing that with SQL Alchemy? 
+**Aʻohe hopohopo, I shall help you with that!**
 
-![surfs-up.png](Images/surfs-up.png)
+
+<img src="Images/surfs-up.jpg" alt="surfs-up" width=1000/> 
+
+## Why SQL Alchemy ?
+
+Starting with the philosophy, quoting from their [website](https://www.sqlalchemy.org/):
+
+> The main goal of SQLAlchemy is to change the way you think about databases and SQL!
+
+SQL Alchemy has two distinct components `core` and `Object Relational Mapper(ORM)`. 
+
+  - Though ORM is what it is famous for, core is itselfa fully featured SQL abstraction toolkit, which provides a smooth layer of abstraction over Python Database API (DBAPI) for database interactivity to a variety of DBMS, by rendering of textual SQL statements understood by the databases, and schema management.
+  
+  - Wheras, ORM is a specific library built on top of the Core. A third party ORM can be built on top of core, also applications can be built directly on top of core.
+  
+<div align="center">
+<p align="center">
+   <img src="Images/architecture.png" alt="architecture" width="750px" height="300px"/>
+</p>
+<p align="center">SQL Alchemy Architecture<p align="center">
+</div>
+  
+  
+
 
 As usual we take a step by step approach to the problem.
 
