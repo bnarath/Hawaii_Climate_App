@@ -11,7 +11,7 @@ To help with your trip planning, you need to do some climate analysis on the are
 
 Starting with the philosophy, quoting from their [website](https://www.sqlalchemy.org/):
 
-> The main goal of SQLAlchemy is to change the way you think about databases and SQL!
+> ## The main goal of SQLAlchemy is to change the way you think about databases and SQL!
 
 SQL Alchemy has two distinct components `core` and `Object Relational Mapper(ORM)`. 
 
