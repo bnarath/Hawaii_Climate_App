@@ -44,8 +44,9 @@ SQLite is a serverless Database engine (software library) that allows applicatio
 </p>
 </div>
 
-As a cherry on top, sqlite comes as preinstalled in recent MAC OS versions.
-Because of all of these advantages, SQLite is chosen as DB for this project.
+As a cherry on top, SQLite comes as preinstalled in recent MAC OS versions.
+
+Because of all of these advantages, SQLite is chosen as the DB for this project.
 
 # Analysis
 ## Climate Analysis and Exploration
