@@ -21,9 +21,9 @@ SQL Alchemy has two distinct components `core` and `Object Relational Mapper(ORM
   
 <div align="center">
 <p align="center">
-   <img src="Images/architecture.png" alt="architecture" width="500px"/>
+   <img src="Images/architecture.png" alt="architecture"/>
 </p>
-<p align="center">SQL Alchemy Architecture<p align="center">
+  <p align="center"><b>SQL Alchemy Architecture</b><p align="center">
 </div>
   
   
