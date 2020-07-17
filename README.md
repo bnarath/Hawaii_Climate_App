@@ -17,7 +17,7 @@ SQL Alchemy has two distinct components `core` and `Object Relational Mapper(ORM
 
   - Though ORM is what it is famous for, core is, itself a fully featured SQL abstraction toolkit, which provides a smooth layer of abstraction over Python Database API (DBAPI) for database interactivity to a variety of DBMS, by rendering of textual SQL statements understood by the databases, and schema management.
   
-  - Wheras, ORM is a specific library built on top of the Core. A third party ORM can be built on top of core, also applications can be built directly on top of core.
+  - Wheras, ORM is a specific library built on top of the Core. A third party ORM can be built on top of core, also, applications can be built directly on top of core.
   
 <div align="center">
 <p align="center">
@@ -26,7 +26,7 @@ SQL Alchemy has two distinct components `core` and `Object Relational Mapper(ORM
   <p align="center"><b>SQL Alchemy Architecture</b><p align="center">
 </div>
   
-  
+`Object Relational Mapper` presents a method of associating `user-defined Python classes` with `database tables`, and `instances of those classes (objects)` with `rows in their corresponding tables`. It includes a system that **transparently synchronizes all changes in state between objects and their related rows**, as well as a system for **expressing database queries in terms of the user defined classes and their defined relationships between each other.**  
 
 
 As usual we take a step by step approach to the problem.
