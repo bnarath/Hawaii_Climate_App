@@ -210,18 +210,34 @@ Use Python and SQLAlchemy to do basic climate analysis and data exploration of y
     
     **subqueries are not executed until they are used in a query itself**
   
-    ```
-    #This question can be solved through subqueries
-    #subquery
-    station_observation = session.query(Measurement.station.label("station"), func.count(Measurement.station).label("DataPoints")).\
-    group_by(Measurement.station).subquery()
+    ```python
+        #This question can be solved through subqueries
+        #subquery
+        station_observation = session.query(Measurement.station.label("station"), func.count(Measurement.station).label("DataPoints")).\
+        group_by(Measurement.station).subquery()
 
-    session.query(station_observation.c.station).order_by(station_observation.c.DataPoints.desc()).limit(1).scalar()
-    
+        session.query(station_observation.c.station).order_by(station_observation.c.DataPoints.desc()).limit(1).scalar()
+
     ```
     ```diff
-    'USC00519281'
+        'USC00519281'
     ```
+    
+  * The tobs statistics of the most active station
+  
+    ```python
+        # Using the station id from the previous query, calculate the lowest temperature recorded, 
+        # highest temperature recorded, and average temperature of the most active station?
+
+
+        pd.read_sql(session.query(func.min(Measurement.tobs).label("lowest_temperature_recorded"),\
+                      func.max(Measurement.tobs).label("highest_temperature_recorded"),\
+                      func.avg(Measurement.tobs).label("average_temperature_recorded")).\
+        filter(Measurement.station==most_active_station).statement, session.bind)
+    ```
+    
+    ![ma_station_stats](Images/ma_station_stats.png)
+    
 
 * Design a query to retrieve the last 12 months of temperature observation data (TOBS).
 
