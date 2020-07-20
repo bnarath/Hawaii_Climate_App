@@ -188,13 +188,40 @@ Use Python and SQLAlchemy to do basic climate analysis and data exploration of y
 
 * Design a query to calculate the total number of stations.
 
+    
+    ```python
+    # Design a query to show how many stations are available in this dataset?
+    session.query(func.distinct(Measurement.station)).count()
+       
+    ```
+
 * Design a query to find the most active stations.
 
   * List the stations and observation counts in descending order.
 
-  * Which station has the highest number of observations?
+    ```python
+       pd.read_sql(session.query(Measurement.station, func.count(Measurement.station).label("Data Points(count)")).\
+       group_by(Measurement.station).order_by(func.count(Measurement.station).desc()).statement, session.bind)
 
-  * Hint: You will need to use a function such as `func.min`, `func.max`, `func.avg`, and `func.count` in your queries.
+    ```
+    ![station_row_count](Images/station_row_count.png)
+    
+  * Which station has the highest number of observations?
+    
+    **subqueries are not executed until they are used in a query itself**
+  
+    ```
+    #This question can be solved through subqueries
+    #subquery
+    station_observation = session.query(Measurement.station.label("station"), func.count(Measurement.station).label("DataPoints")).\
+    group_by(Measurement.station).subquery()
+
+    session.query(station_observation.c.station).order_by(station_observation.c.DataPoints.desc()).limit(1).scalar()
+    
+    ```
+    ```diff
+    'USC00519281'
+    ```
 
 * Design a query to retrieve the last 12 months of temperature observation data (TOBS).
 
