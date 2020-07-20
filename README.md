@@ -119,19 +119,69 @@ Use Python and SQLAlchemy to do basic climate analysis and data exploration of y
 
 ## Precipitation Analysis
 
-* Design a query to retrieve the last 12 months of precipitation data.
+* Design a query to retrieve the last 12 months of precipitation data. Select only the `date` and `prcp` values.
 
-* Select only the `date` and `prcp` values.
+    ```python
+    ### Calculate the date 1 year ago from the last data point in the database
+    last_date = session.query(Measurement.date).order_by(Measurement.date.desc()).limit(1).scalar()
+
+    ### Last one year mark in the dataset
+    One_year_mark = dt.datetime.strptime(last_date, "%Y-%m-%d")-dt.timedelta(days=366)
+    
+    ### Perform a query to retrieve the data and precipitation scores
+    last_one_year_prcp = session.query(Measurement.date, Measurement.prcp).filter(
+    (Measurement.date >= One_year_mark)).order_by(Measurement.date).all()
+
+    ```
 
 * Load the query results into a Pandas DataFrame and set the index to the date column.
 
+    ```python
+    ### Save the query results as a Pandas DataFrame and set the index to the date column
+    last_one_year_prcp_DF = pd.DataFrame(last_one_year_prcp, columns=['Date','precipitation'])
+    last_one_year_prcp_DF.set_index('Date', inplace=True)
+    #There are 208 NUll prcp values    
+    ```
+
 * Sort the DataFrame values by `date`.
 
-* Plot the results using the DataFrame `plot` method.
+    ```python
+    ### Sort the dataframe by date (Though the data is sorted initially, creating DF from the data changes the order)
+    last_one_year_prcp_DF.sort_index(inplace=True)
+       
+    ```
 
-  ![precipitation](Images/precipitation.png)
+* Plot the results using the DataFrame `plot` method.
+    
+    ```python
+    fig, ax = plt.subplots(figsize=(15,6))
+    _=last_one_year_prcp_DF.plot(ax=ax)
+
+    ### Annotation and labelling
+    xticks = np.arange(0,len(last_one_year_prcp_DF)+1,250)
+    xticklabels = last_one_year_prcp_DF.index[xticks].to_list()
+    plt.ylabel("Inches")
+    _=plt.suptitle(f"Precipitation for the last one year: from {last_one_year_prcp_DF.index.min()} to {last_one_year_prcp_DF.index.max()}", fontsize=20,        weight='bold', y=1.06)
+    _=plt.xlim((-50,len(last_one_year_prcp_DF)+10))
+    _=plt.xticks(xticks, xticklabels, rotation=90)
+    _=plt.tight_layout()
+    _= plt.savefig('../Images/Last_one_year_precipitation.png', bbox_inches = "tight" )
+       
+    ```
+
+
+    ![precipitation](Images/Last_one_year_precipitation.png)
+    
 
 * Use Pandas to print the summary statistics for the precipitation data.
+
+    ```python
+    # Use Pandas to calcualte the summary statistics for the precipitation data
+    last_one_year_prcp_DF.describe()
+       
+    ```
+    ![precipitation_description](Images/precipitation_describe.png)
+    
 
 ## Station Analysis
 
