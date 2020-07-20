@@ -48,6 +48,67 @@ As a cherry on top, SQLite comes as preinstalled in recent MAC OS versions.
 
 Because of all of these advantages, SQLite is chosen as the DB for this project.
 
+## Database connection & data retrieaval
+
+Establishing a session with the database involves the following steps
+
+  - Create an engine with the database
+  
+  ```python
+    from sqlalchemy import create_engine
+    engine = create_engine("sqlite:///../Resources/hawaii.sqlite", echo=True) 
+    #echo=True for seeing the detailed interaction with the database. Turn it off on production code
+  ```
+  
+  - Optionally, create an inspector and bind to the engine (To inspect the database. I use this for the ease of readability of schema)
+    
+  ```python
+    from sqlalchemy import inspect
+    Inspector = inspect(engine)
+  ```
+  
+  - Create a base class and instruct the tables to be mapped to the classes directly
+    
+  ```python
+     Base = automap_base()
+     # reflect the tables
+     Base.prepare(engine, reflect=True)
+  ```
+  
+  - Inspect the database tables (or mapped classes), the columns, data types etc. (either via Inspector or Base class)
+    
+  ```python
+     #via inspector
+     [[f"Table name : {table}"]+[f"{col['name']} : {col['type']}{' (primary_key)' if col['primary_key']==1 else None}" \
+                            for col in Inspector.get_columns(table)] for table in Inspector.get_table_names()]
+                            
+     #via Base class
+     Base.metadata.tables
+     Base.classes.measurement.__dict__ #table1
+     Base.classes.station.__dict__ #table2
+
+  ```
+  
+  - Save the mapped table references (classes) to variables, so that we can query them later
+  
+  ```python
+  
+     Measurement = Base.classes.measurement
+     Station = Base.classes.station
+    
+  ```
+  
+  - Create a session and map that to engine
+    
+  ```python
+     session = Session(bind=engine)
+  ```
+  
+  **Now, we can access the tables and retrieve the data through session by querying the classes!!**  
+  
+ 
+  
+
 # Analysis
 ## Climate Analysis and Exploration
 
