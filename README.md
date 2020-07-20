@@ -52,7 +52,7 @@ Because of all of these advantages, SQLite is chosen as the DB for this project.
 
 Establishing a session with the database involves the following steps
 
-  - Create an engine with the database
+  1. Create an engine with the database
   
   ```python
     from sqlalchemy import create_engine
@@ -60,14 +60,14 @@ Establishing a session with the database involves the following steps
     #echo=True for seeing the detailed interaction with the database. Turn it off on production code
   ```
   
-  - Optionally, create an inspector and bind to the engine (To inspect the database. I use this for the ease of readability of schema)
+  1. Optionally, create an inspector and bind to the engine (To inspect the database. I use this for the ease of readability of schema)
     
   ```python
     from sqlalchemy import inspect
     Inspector = inspect(engine)
   ```
   
-  - Create a base class and instruct the tables to be mapped to the classes directly
+  1. Create a base class and instruct the tables to be mapped to the classes directly
     
   ```python
      Base = automap_base()
@@ -75,7 +75,7 @@ Establishing a session with the database involves the following steps
      Base.prepare(engine, reflect=True)
   ```
   
-  - Inspect the database tables (or mapped classes), the columns, data types etc. (either via Inspector or Base class)
+  1. Inspect the database tables (or mapped classes), the columns, data types etc. (either via Inspector or Base class)
     
   ```python
      #via inspector
@@ -89,7 +89,7 @@ Establishing a session with the database involves the following steps
 
   ```
   
-  - Save the mapped table references (classes) to variables, so that we can query them later
+  1. Save the mapped table references (classes) to variables, so that we can query them later
   
   ```python
   
@@ -98,7 +98,7 @@ Establishing a session with the database involves the following steps
     
   ```
   
-  - Create a session and map that to engine
+  1. Create a session and map that to engine
     
   ```python
      session = Session(bind=engine)
