@@ -129,6 +129,7 @@ Use Python and SQLAlchemy to do basic climate analysis and data exploration of y
     One_year_mark = dt.datetime.strptime(last_date, "%Y-%m-%d")-dt.timedelta(days=366)
     
     ### Perform a query to retrieve the data and precipitation scores
+    #sql alchemy understands the DateTime dtype and converts that to string implicitly!!
     last_one_year_prcp = session.query(Measurement.date, Measurement.prcp).filter(
     (Measurement.date >= One_year_mark)).order_by(Measurement.date).all()
 
