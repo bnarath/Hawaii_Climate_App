@@ -342,17 +342,11 @@ Now that you have completed your initial analysis, design a Flask API based on t
   A paired t-test simply calculates the difference between paired observations (e.g., before and after) and then performs a 1-sample t-test on the differences.
   
   Paired t-test's test statistic
-  ```math
-    \frac{\bar{d}-\mu_{d}}{S_{d}/\sqrt{n}}
-  ```
-  where
-  ```math
-  
-        \bar{d} : sample mean of differences
-        \mu_{d} : population mean of differences
-        S_{d} : standard deviation of the differences
-        n : is the no of samples (same for both)
-
+  `$\frac{\bar{d}-\mu_{d}}{S_{d}/\sqrt{n}}$`
+  where `$\bar{d}$` : sample mean of differences
+        `$\mu_{d}$` : population mean of differences
+        `$S_{d}$` : standard deviation of the differences
+        `$n$` : is the no of samples (same for both)
   ```
   
   
