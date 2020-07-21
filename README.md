@@ -499,6 +499,6 @@ Now that you have completed your initial analysis, design a Flask API based on t
         _= plt.savefig('../Images/temperature_historical.png', bbox_inches = "tight" )
     ```
 
-    ![daily-normals](Images/temperature_historical.png.png)
+    ![daily-normals](Images/temperature_historical.png)
 
 
