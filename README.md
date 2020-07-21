@@ -494,7 +494,7 @@ Now that you have completed your initial analysis, design a Flask API based on t
         _=plt.xticks(range(len(dates)), dates, rotation=45, ha='right')
         _=plt.xlim((0,len(dates)-1))
         _=plt.ylabel("Temperature ($^\circ F$)")
-        _=plt.title(f"Historical stats of Temperature\non Trip Dates", fontsize=20, y=1)
+        _=plt.title(f"Daily Normals of Temperature\non Trip Dates", fontsize=20, y=1)
         _=plt.tight_layout()
         _= plt.savefig('../Images/temperature_historical.png', bbox_inches = "tight" )
     ```
