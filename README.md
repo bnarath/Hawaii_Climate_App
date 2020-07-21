@@ -243,22 +243,22 @@ Use Python and SQLAlchemy to do basic climate analysis and data exploration of y
 
   * Filter by the station with the highest number of observations.
 
-  ```python
-  
-    # Choose the station with the highest number of temperature observations.
-    # Query the last 12 months of temperature observation data for this station and plot the results as a histogram
+      ```python
 
-    #Note:- most_temp_obs_station is same as the most_active_station only. This is for the sake of completion
-    most_temp_obs_station = session.query(Measurement.station, func.count(Measurement.tobs).label("Temperature Observations")).\
-    group_by(Measurement.station).order_by(func.count(Measurement.tobs).desc()).limit(1).scalar()
+        # Choose the station with the highest number of temperature observations.
+        # Query the last 12 months of temperature observation data for this station and plot the results as a histogram
+
+        #Note:- most_temp_obs_station is same as the most_active_station only. This is for the sake of completion
+        most_temp_obs_station = session.query(Measurement.station, func.count(Measurement.tobs).label("Temperature Observations")).\
+        group_by(Measurement.station).order_by(func.count(Measurement.tobs).desc()).limit(1).scalar()
 
 
-    temp_obs_data_12_months_USC00519281 = pd.read_sql(session.query(Measurement.tobs).filter(\
-                                           (Measurement.date>=One_year_mark)&
-                                           (Measurement.station==most_temp_obs_station)).statement, session.bind)
+        temp_obs_data_12_months_USC00519281 = pd.read_sql(session.query(Measurement.tobs).filter(\
+                                               (Measurement.date>=One_year_mark)&
+                                               (Measurement.station==most_temp_obs_station)).statement, session.bind)
 
-  
-  ```
+
+      ```
 
   * Plot the results as a histogram with `bins=12`.
   
