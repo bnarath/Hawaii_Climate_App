@@ -325,6 +325,38 @@ Now that you have completed your initial analysis, design a Flask API based on t
 
 * Hawaii is reputed to enjoy mild weather all year. Is there a meaningful difference between the temperature in, for example, June and December?
 
+  * Use the t-test to determine whether the difference in the means, if any, is statistically significant. Will you use a ``paired t-test``, or an ``unpaired t-test``? **Why?**
+  
+  The selection of paired vs unpaired t-test is based on the **test subject**. If the subject is same, then we use ``paired t-test``, else ``unpaired t-test``.
+  An example, taken from [socratic.org](https://socratic.org/questions/what-is-a-paired-and-unpaired-t-test-what-are-the-differences)
+  
+  If you wanted to conduct an experiment to see **how drinking an energy drink increases heart rate**, you could do it two ways.
+
+  The "paired" way would be to measure the heart rate of 10 people before they drink the energy drink and then measure the heart rate of the same 10 people after     drinking the energy drink. These two samples consist of the same test subjects, so you would perform a paired t-test on the means of both samples.
+
+  The "unpaired" way would be to measure the heart rate of 10 people before drinking an energy drink and then measure the heart rate of some other group of people   who have drank energy drinks. These two samples consist of different test subjects, so you would perform an unpaired t-test on the means of both samples.
+  
+  Now, let's look into the test statistic of both the tests;
+  
+  The paired t-test and the 1-sample t-test are actually the same test in disguise! A 1-sample t-test compares one sample mean to a null hypothesis value. 
+  A paired t-test simply calculates the difference between paired observations (e.g., before and after) and then performs a 1-sample t-test on the differences.
+  
+  Paired t-test's test statistic
+  ```math
+    \frac{\bar{d}-\mu_{d}}{S_{d}/\sqrt{n}}
+  ```
+  where
+  ```math
+  
+        \bar{d} : sample mean of differences
+        \mu_{d} : population mean of differences
+        S_{d} : standard deviation of the differences
+        n : is the no of samples (same for both)
+
+  ```
+  
+  
+
 * You may either use SQLAlchemy or pandas's `read_csv()` to perform this portion.
 
 * Identify the average temperature in June at all stations across all available years in the dataset. Do the same for December temperature.
