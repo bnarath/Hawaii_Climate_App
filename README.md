@@ -341,15 +341,15 @@ Now that you have completed your initial analysis, design a Flask API based on t
   The paired t-test and the 1-sample t-test are actually the same test in disguise! A 1-sample t-test compares one sample mean to a null hypothesis value. 
   A paired t-test simply calculates the difference between paired observations (e.g., before and after) and then performs a 1-sample t-test on the differences.
   
-  Paired t-test's test statistic
-  `$\frac{\bar{d}-\mu_{d}}{S_{d}/\sqrt{n}}$`
-  where `$\bar{d}$` : sample mean of differences
-        `$\mu_{d}$` : population mean of differences
-        `$S_{d}$` : standard deviation of the differences
-        `$n$` : is the no of samples (same for both)
-  ```
   
   
+  <div align="center">
+        <p align="center">
+            <img src="Images/paired_t_eqn.png" alt="paired_t_eqn"/>
+        </p>
+    <p Paired t-test's test statistic align="center"></p>                 
+  </div>
+
 
 * You may either use SQLAlchemy or pandas's `read_csv()` to perform this portion.
 
