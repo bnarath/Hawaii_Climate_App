@@ -272,7 +272,10 @@ Use Python and SQLAlchemy to do basic climate analysis and data exploration of y
         _=plt.tight_layout()
         _= plt.savefig('../Images/station-histogram_USC00519281.png', bbox_inches = "tight" )    
     ```
-    ![station-histogram](Images/station-histogram_USC00519281.png)
+
+    <p align="center">
+        <img src="Images/station-histogram_USC00519281.png" alt="station-histogram"/>
+    </p>
 
 - - -
 
