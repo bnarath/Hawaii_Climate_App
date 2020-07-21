@@ -398,7 +398,11 @@ Now that you have completed your initial analysis, design a Flask API based on t
   
     ```
 
-    ![temperature](Images/temperature_err.png)
+    <div align="center">
+        <p align="center">
+            <img src="Images/temperature_err.png" alt="temperature_err"/>
+        </p>
+    </div>
 
 ### Daily Rainfall Average
 
