@@ -347,7 +347,8 @@ Now that you have completed your initial analysis, design a Flask API based on t
         <p align="center">
             <img src="Images/paired_t_eqn.png" alt="paired_t_eqn"/>
         </p>
-    <p Paired t-test's test statistic align="center"></p>                 
+    
+    <p align="center"><b>Paired t-test's test statistic</b><p align="center">                 
   </div>
 
 
