@@ -342,17 +342,63 @@ Now that you have completed your initial analysis, design a Flask API based on t
 
 ### Temperature Analysis II
 
-* The starter notebook contains a function called `calc_temps` that will accept a start date and end date in the format `%Y-%m-%d`. The function will return the minimum, average, and maximum temperatures for that range of dates.
+* Find out the minimum, average and max temperature for the entire trip. Use function `calc_temps` that will accept a start date and end date in the format `%Y-%m-%d`. The function will return the minimum, average, and maximum temperatures for that range of dates.
 
-* Use the `calc_temps` function to calculate the min, avg, and max temperatures for your trip using the matching dates from the previous year (i.e., use "2017-01-01" if your trip start date was "2018-01-01").
+ ```python
+ 
+    def calc_temps(start_date, end_date):
+    """TMIN, TAVG, and TMAX for a list of dates.
+    
+    Args:
+        start_date (string): A date string in the format %Y-%m-%d
+        end_date (string): A date string in the format %Y-%m-%d
+        
+    Returns:
+        TMIN, TAVE, and TMAX
+    """
+    
+    return session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+        filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
+ ```
 
-* Plot the min, avg, and max temperature from your previous query as a bar chart.
+* Use the `calc_temps` function to calculate the min, avg, and max temperatures for your trip using the matching dates from the previous year (i.e., use "2017-01-01" if your trip start date was "2018-01-01"). 
+
+  ```python
+     tmin, tavg, tmax = calc_temps('2017-04-28', '2017-05-06')[0]
+  ```
+
+* Plot the min, avg, and max temperature from the previous query as a bar chart.
 
   * Use the average temperature as the bar height.
 
   * Use the peak-to-peak (TMAX-TMIN) value as the y error bar (YERR).
+   
+    ```python
+    
+    # Use the peak-to-peak (tmax-tmin) value as the y error bar (yerr)
+    fig, ax = plt.subplots(figsize=(2.5,7))
+    _=ax.bar([0], [tavg], width=0.5, color='coral', alpha=0.5)
+    _=plt.xlim((-0.25, 0.25))
+    _=plt.ylim((0, tmax+30))
+    _=plt.xticks([])
+    _=plt.ylabel("Temperature ($^\circ F$)")
+    _=plt.title(f"Trip Avg Temp", fontsize=20, y=0.93)
 
-    ![temperature](Images/temperature.png)
+    #Plot error bar. The right way to plot the error bar is as asymmetric with tmin at the bottom of the bar
+    #and tmax at the top of the bar.
+    _=plt.errorbar(x=0, y=tavg, yerr=[[tavg-tmin], [tmax-tavg]], zorder=2, c='k')
+
+
+    #Annotation
+    _=plt.annotate(f"Max temp = {tmax}$^\circ F$", (0, tmax+3), fontsize=8, ha='center')
+    _=plt.annotate(f"Min temp = {tmin}$^\circ F$", (0, tmin-5), fontsize=8, ha='center')
+
+    _=plt.tight_layout()
+    _= plt.savefig('../Images/temperature_err.png', bbox_inches = "tight" )
+  
+    ```
+
+    ![temperature](Images/temperature_err.png)
 
 ### Daily Rainfall Average
 
