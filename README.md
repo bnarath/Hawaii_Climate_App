@@ -200,8 +200,11 @@ Use Python and SQLAlchemy to do basic climate analysis and data exploration of y
   * List the stations and observation counts in descending order.
 
     ```python
-       pd.read_sql(session.query(Measurement.station, func.count(Measurement.station).label("Data Points(count)")).\
-       group_by(Measurement.station).order_by(func.count(Measurement.station).desc()).statement, session.bind)
+        result = session.query(Measurement.station, func.count(Measurement.station).label("Data Points(count)")).\
+        group_by(Measurement.station).order_by(func.count(Measurement.station).desc()).all()
+
+        Station_Activity_DF = pd.DataFrame(result, columns=['station', 'Data Points(count)'])
+        Station_Activity_DF
 
     ```
     ![station_row_count](Images/station_row_count.png)
@@ -229,11 +232,13 @@ Use Python and SQLAlchemy to do basic climate analysis and data exploration of y
         # Using the station id from the previous query, calculate the lowest temperature recorded, 
         # highest temperature recorded, and average temperature of the most active station?
 
-
-        pd.read_sql(session.query(func.min(Measurement.tobs).label("lowest_temperature_recorded"),\
+        result = session.query(func.min(Measurement.tobs).label("lowest_temperature_recorded"),\
                       func.max(Measurement.tobs).label("highest_temperature_recorded"),\
                       func.avg(Measurement.tobs).label("average_temperature_recorded")).\
-        filter(Measurement.station==most_active_station).statement, session.bind)
+        filter(Measurement.station==most_active_station).all()
+
+        pd.DataFrame(result, columns=["lowest_temperature_recorded", "highest_temperature_recorded", "average_temperature_recorded"])\
+        .applymap(lambda x: "{:.2f}$^\circ$F".format(x))
     ```
     
     ![ma_station_stats](Images/ma_station_stats.png)
@@ -253,10 +258,11 @@ Use Python and SQLAlchemy to do basic climate analysis and data exploration of y
         group_by(Measurement.station).order_by(func.count(Measurement.tobs).desc()).limit(1).scalar()
 
 
-        temp_obs_data_12_months_USC00519281 = pd.read_sql(session.query(Measurement.tobs).filter(\
-                                               (Measurement.date>=One_year_mark)&
-                                               (Measurement.station==most_temp_obs_station)).statement, session.bind)
+        result = session.query(Measurement.tobs).filter(\
+                                  (Measurement.date>=One_year_mark)&\
+                                  (Measurement.station==most_temp_obs_station)).all()
 
+        temp_obs_data_12_months_USC00519281 = pd.DataFrame(result, columns=['tobs'])
 
       ```
 
