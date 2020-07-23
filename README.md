@@ -441,40 +441,99 @@ Now that we have completed your initial analysis, let's design a Flask API based
 
 ### Temperature Analysis I
 
-* Hawaii is reputed to enjoy mild weather all year. Is there a meaningful difference between the temperature in, for example, June and December?
+- Hawaii is reputed to enjoy mild weather all year. Is there a meaningful difference between the temperature in, for example, June and December?
 
-  * Use the t-test to determine whether the difference in the means, if any, is statistically significant. Will you use a ``paired t-test``, or an ``unpaired t-test``? **Why?**
-  
-  The selection of paired vs unpaired t-test is based on the **test subject**. If the subject is same, then we use ``paired t-test``, else ``unpaired t-test``.
-  An example, taken from [socratic.org](https://socratic.org/questions/what-is-a-paired-and-unpaired-t-test-what-are-the-differences)
-  
-  If you wanted to conduct an experiment to see **how drinking an energy drink increases heart rate**, you could do it two ways.
+  ```python
+        #Extract june and december data
+        June_DF = pd.DataFrame(session.query(Measurement.date, Measurement.tobs).\
+                     filter(func.strftime('%m', Measurement.date)=='06').order_by(Measurement.date).all(), columns=['Date', 'Temp'])
 
-  The "paired" way would be to measure the heart rate of 10 people before they drink the energy drink and then measure the heart rate of the same 10 people after     drinking the energy drink. These two samples consist of the same test subjects, so you would perform a paired t-test on the means of both samples.
+        Dec_DF = pd.DataFrame(session.query(Measurement.date, Measurement.tobs).\
+                     filter(func.strftime('%m', Measurement.date)=='12').order_by(Measurement.date).all(), columns=['Date', 'Temp'])
 
-  The "unpaired" way would be to measure the heart rate of 10 people before drinking an energy drink and then measure the heart rate of some other group of people   who have drank energy drinks. These two samples consist of different test subjects, so you would perform an unpaired t-test on the means of both samples.
-  
-  Now, let's look into the test statistic of both the tests;
-  
-  The paired t-test and the 1-sample t-test are actually the same test in disguise! A 1-sample t-test compares one sample mean to a null hypothesis value. 
-  A paired t-test simply calculates the difference between paired observations (e.g., before and after) and then performs a 1-sample t-test on the differences.
-  
-  
-  
-  <div align="center">
-        <p align="center">
-            <img src="Images/paired_t_eqn.png" alt="paired_t_eqn"/>
-        </p>
-    
-    <p align="center"><b>Paired t-test's test statistic</b><p align="center">                 
-  </div>
+        #Set Date as the index and sort by index for both the data frames
+        June_DF.set_index('Date', inplace=True)
+        Dec_DF.set_index('Date', inplace=True)
+        #Join both the DFs on index (outer join)
+        Combined_DF = June_DF.join(Dec_DF, how='outer', lsuffix='_June', rsuffix='_Dec')
+        #Sort index
+        Combined_DF.sort_index(inplace=True)
+        Combined_DF.info()
+  ```
+  ```diff
+        Index: 3217 entries, 2010-06-01 to 2017-06-30
+        Data columns (total 2 columns):
+         #   Column     Non-Null Count  Dtype  
+        ---  ------     --------------  -----  
+         0   Temp_June  1700 non-null   float64
+         1   Temp_Dec   1517 non-null   float64
+  ```
+  - Plot the time-series graph to see the temperature in June and December varying over the years
+      ```python
+        fig, ax = plt.subplots(figsize=(10,6))
+        _=Combined_DF.plot(ax=ax,alpha=0.4, legend=False)
 
+        xticks = list(np.arange(0,len(Combined_DF),250))+[len(Combined_DF)-1]
+        xticklabels = Combined_DF.index[xticks].to_list()
+        _=plt.ylim(Combined_DF.min().min()-5, Combined_DF.max().max()+10)
+        _=plt.xticks(xticks, xticklabels, rotation=90)
+        _=plt.legend(loc='upper right')
+        _=plt.ylabel("Temperature ($^\circ F$)")
+        _=plt.title(f"Daily Temperature for June and December months\nfrom {Combined_DF.index[0]} to {Combined_DF.index[-1]}", fontsize=20, y=1)
+        _=plt.tight_layout()
+        _= plt.savefig('../Images/temperature_june_dec_time_series.png', bbox_inches = "tight" )
+      ```
+      ![temperature_june_dec_time_series](Images/temperature_june_dec_time_series.png)
+  
+  - Also, plot histograms to splot the difference
+      ```python
+            fig, ax = plt.subplots(figsize=(10,6))
+            _=Combined_DF.hist(column = ['Temp_June'], \
+                       alpha = 0.5, ax=ax, label='June')
+            _=Combined_DF.hist(column = ['Temp_Dec'], \
+                       alpha = 0.5, ax=ax, label='December')
+            _=plt.xlabel("Temperature ($^\circ F$)")
+            _=plt.ylabel("Frequency Count")
+            _=plt.title(f"Distribution of Temperature for June and December \nfrom {Combined_DF.index[0]} to {Combined_DF.index[-1]}", fontsize=20, y=1)
+            _=plt.legend(loc='upper left')
+            _=plt.tight_layout()
+            _= plt.savefig('../Images/temperature_june_dec_histogram.png', bbox_inches = "tight" )
+      ```
+      ![temperature_june_dec_histogram](Images/temperature_june_dec_histogram.png)
+**The time series and histogram plots suggest that June seems to have higher temperature compared to December**
 
-* You may either use SQLAlchemy or pandas's `read_csv()` to perform this portion.
+-  Identify the average temperature in June at all stations across all available years in the dataset. Do the same for December temperature.    
+   
+   ```python
+        #Remove NANs
+        JUNE=Combined_DF['Temp_June'][Combined_DF['Temp_June'].notna()]
+        DEC=Combined_DF['Temp_Dec'][Combined_DF['Temp_Dec'].notna()]
+        display(Math(r'\ Average\ temperature\ in\ June\ at\ all\ stations\ across\ all\ available\ year\ is\ :{}^\circ F\\\
+        Average\ temperature\ in\ December\ at\ all\ stations\ across\ all\ available\ year\ is\ :{}^\circ F'.format(np.round(np.mean(JUNE), 2), np.round(np.mean(DEC), 2))))
+   ```
+   ![temperature_june_dec_avg](Images/Avg_June_Dec_Temp.png)
+   
+- Use the t-test to determine whether the difference in the means, if any, is statistically significant. Will you use a paired t-test, or an unpaired t-test? Why?
 
-* Identify the average temperature in June at all stations across all available years in the dataset. Do the same for December temperature.
+    - We need to use unpaired(independent) T-test**
+        - **Reason**
+            - The paired t-test and the 1-sample t-test are actually the same test in disguise! A 1-sample t-test compares one sample mean to a null hypothesis value. A paired t-test simply calculates the difference between paired observations (e.g., before and after) and then performs a 1-sample t-test on the differences.
+           - In our case, we have unequal sample size for June and December months because of the difference in the number of days of each month, samples not available for all stations for all days etc. We have 1700 samples for June and 1517 samples for June, and we cannot pair them in a before-after sense.
 
-* Use the t-test to determine whether the difference in the means, if any, is statistically significant. Will you use a paired t-test, or an unpaired t-test? Why?
+    - Further, we need to perform independent T-test with unequal variance**
+        - **Reason**
+            - Welch's t-test performs better than Student's t-test (equal variance) whenever sample sizes and variances are unequal between groups, and gives the same result when sample sizes and variances are equal. 
+            - Refer [this paper](https://www.rips-irsp.com/articles/10.5334/irsp.82/)
+            
+    - Test
+        ```python
+            sts.ttest_ind(JUNE, DEC, equal_var=False)
+        ```
+        ```diff
+            Ttest_indResult(statistic=31.35503692096242, pvalue=4.193529835915755e-187)
+        ```
+    - **As p-value is < 0.05, we REJECT the null hypothesis (which states both the means are same)**
+    - **The mean temperature in June is statistically different (higher) than that of December**
 
 ### Temperature Analysis II
 
@@ -542,15 +601,15 @@ Now that we have completed your initial analysis, let's design a Flask API based
 
 ### Daily Rainfall Average
 
-* Calculate the average rainfall per weather station using the previous year's matching dates.
+* Calculate the total rainfall per weather station using the previous year's matching dates.
 
     ```python
-        # Calculate the average amount of rainfall per weather station for your trip dates using the previous year's matching dates.
+        # Calculate the total amount of rainfall per weather station for your trip dates using the previous year's matching dates.
         # Sort this in descending order by precipitation amount and list the station, name, latitude, longitude, and elevation
         prev_year_start_date = '2017-04-01'
         prev_year_end_date = '2017-04-10'
 
-        total_prcp_in_stations = session.query(Measurement.station,  func.avg(Measurement.prcp).label('Avg_prcp')).\
+        total_prcp_in_stations = session.query(Measurement.station,  func.sum(Measurement.prcp).label('Total_prcp')).\
         filter(\
                (Measurement.date<=prev_year_end_date) &\
               (Measurement.date>=prev_year_start_date)).\
@@ -558,15 +617,16 @@ Now that we have completed your initial analysis, let's design a Flask API based
 
 
         #Note that isouter=True makes the join as left join
+        #The isouter=True flag will produce a LEFT OUTER JOIN which is the same as a LEFT JOIN
         #Ref: https://stackoverflow.com/questions/39619353/how-to-perform-a-left-join-in-sqlalchemy
-        result = session.query(total_prcp_in_stations.c.station, Station.name, Station.latitude, Station.longitude, Station.elevation, total_prcp_in_stations.c.Avg_prcp).\
+        result = session.query(total_prcp_in_stations.c.station, Station.name, Station.latitude, Station.longitude, Station.elevation, total_prcp_in_stations.c.Total_prcp).\
         join(Station, Station.station == total_prcp_in_stations.c.station, isouter=True).all()
 
         #Display
-        pd.DataFrame(result, columns=['station', 'name', 'latitude', 'longitude', 'elevation', 'daily_prcp_avg'])    
+        pd.DataFrame(result, columns=['station', 'name', 'latitude', 'longitude', 'elevation', 'Total_prcp'])    
     ```
     
-    ![daily_prcp_avg](Images/daily_prcp_avg.png)
+    ![daily_prcp_avg](Images/daily_prcp_total.png)
 
 * Calculate the daily normals. Normals are the averages for the min, avg, and max temperatures.
 
