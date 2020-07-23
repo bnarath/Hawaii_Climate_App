@@ -542,22 +542,22 @@ Now that we have completed your initial analysis, let's design a Flask API based
 
 * Find out the minimum, average and max temperature for the entire trip. Use function `calc_temps` that will accept a start date and end date in the format `%Y-%m-%d`. The function will return the minimum, average, and maximum temperatures for that range of dates.
 
- ```python
- 
-    def calc_temps(start_date, end_date):
-    """TMIN, TAVG, and TMAX for a list of dates.
-    
-    Args:
-        start_date (string): A date string in the format %Y-%m-%d
-        end_date (string): A date string in the format %Y-%m-%d
-        
-    Returns:
-        TMIN, TAVE, and TMAX
-    """
-    
-    return session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-        filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
- ```
+     ```python
+
+        def calc_temps(start_date, end_date):
+        """TMIN, TAVG, and TMAX for a list of dates.
+
+        Args:
+            start_date (string): A date string in the format %Y-%m-%d
+            end_date (string): A date string in the format %Y-%m-%d
+
+        Returns:
+            TMIN, TAVE, and TMAX
+        """
+
+        return session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+            filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
+     ```
 
 * Use the `calc_temps` function to calculate the min, avg, and max temperatures for your trip using the matching dates from the previous year (i.e., use "2017-01-01" if your trip start date was "2018-01-01"). 
 
@@ -606,30 +606,30 @@ Now that we have completed your initial analysis, let's design a Flask API based
 
 * Calculate the total rainfall per weather station using the previous year's matching dates.
 
-```python
-    # Calculate the total amount of rainfall per weather station for your trip dates using the previous year's matching dates.
-    # Sort this in descending order by precipitation amount and list the station, name, latitude, longitude, and elevation
-    prev_year_start_date = '2017-04-01'
-    prev_year_end_date = '2017-04-10'
+    ```python
+        # Calculate the total amount of rainfall per weather station for your trip dates using the previous year's matching dates.
+        # Sort this in descending order by precipitation amount and list the station, name, latitude, longitude, and elevation
+        prev_year_start_date = '2017-04-01'
+        prev_year_end_date = '2017-04-10'
 
-    total_prcp_in_stations = session.query(Measurement.station,  func.sum(Measurement.prcp).label('Total_prcp')).\
-    filter(\
-           (Measurement.date<=prev_year_end_date) &\
-          (Measurement.date>=prev_year_start_date)).\
-    group_by(Measurement.station).order_by(func.avg(Measurement.prcp).desc()).subquery()
+        total_prcp_in_stations = session.query(Measurement.station,  func.sum(Measurement.prcp).label('Total_prcp')).\
+        filter(\
+               (Measurement.date<=prev_year_end_date) &\
+              (Measurement.date>=prev_year_start_date)).\
+        group_by(Measurement.station).order_by(func.avg(Measurement.prcp).desc()).subquery()
 
 
-    #Note that isouter=True makes the join as left join
-    #The isouter=True flag will produce a LEFT OUTER JOIN which is the same as a LEFT JOIN
-    #Ref: https://stackoverflow.com/questions/39619353/how-to-perform-a-left-join-in-sqlalchemy
-    result = session.query(total_prcp_in_stations.c.station, Station.name, Station.latitude, Station.longitude, Station.elevation, total_prcp_in_stations.c.Total_prcp).\
-    join(Station, Station.station == total_prcp_in_stations.c.station, isouter=True).all()
+        #Note that isouter=True makes the join as left join
+        #The isouter=True flag will produce a LEFT OUTER JOIN which is the same as a LEFT JOIN
+        #Ref: https://stackoverflow.com/questions/39619353/how-to-perform-a-left-join-in-sqlalchemy
+        result = session.query(total_prcp_in_stations.c.station, Station.name, Station.latitude, Station.longitude, Station.elevation, total_prcp_in_stations.c.Total_prcp).\
+        join(Station, Station.station == total_prcp_in_stations.c.station, isouter=True).all()
 
-    #Display
-    pd.DataFrame(result, columns=['station', 'name', 'latitude', 'longitude', 'elevation', 'Total_prcp'])    
-```
+        #Display
+        pd.DataFrame(result, columns=['station', 'name', 'latitude', 'longitude', 'elevation', 'Total_prcp'])    
+    ```
     
-    ![daily_prcp_avg](Images/daily_prcp_total.png)
+    ![daily_prcp_total](Images/daily_prcp_total.png)
 
 * Calculate the daily normals. Normals are the averages for the min, avg, and max temperatures.
 
@@ -656,48 +656,48 @@ Now that we have completed your initial analysis, let's design a Flask API based
 
     * Create a list of dates for your trip in the format `%m-%d`. Use the `daily_normals` function to calculate the normals for each date string and append the results to a list.
 
-    ```python
-    # calculate the daily normals for your trip
-    # push each tuple of calculations into a list called `normals`
+        ```python
+        # calculate the daily normals for your trip
+        # push each tuple of calculations into a list called `normals`
 
-    # Set the start and end date of the trip
-    # Use the start and end date to create a range of dates
-    # Stip off the year and save a list of %m-%d strings
-    # Loop through the list of %m-%d strings and calculate the normals for each date
+        # Set the start and end date of the trip
+        # Use the start and end date to create a range of dates
+        # Stip off the year and save a list of %m-%d strings
+        # Loop through the list of %m-%d strings and calculate the normals for each date
 
-    normals = []
-    delta = dt.datetime.strptime(prev_year_end_date, "%Y-%m-%d") - dt.datetime.strptime(prev_year_start_date, "%Y-%m-%d")
-    dates = []
-    for i in range(delta.days+1):
-        date = dt.datetime.strptime(prev_year_start_date, "%Y-%m-%d") + dt.timedelta(days=i)
-        dates.append(dt.datetime.strftime(date, "%Y-%m-%d"))
-        tmin,tavg,tmax = np.ravel(daily_normals(dt.datetime.strftime(date, "%m-%d")))
-        normals.append((tmin,tavg,tmax))
-    
-    ```
+        normals = []
+        delta = dt.datetime.strptime(prev_year_end_date, "%Y-%m-%d") - dt.datetime.strptime(prev_year_start_date, "%Y-%m-%d")
+        dates = []
+        for i in range(delta.days+1):
+            date = dt.datetime.strptime(prev_year_start_date, "%Y-%m-%d") + dt.timedelta(days=i)
+            dates.append(dt.datetime.strftime(date, "%Y-%m-%d"))
+            tmin,tavg,tmax = np.ravel(daily_normals(dt.datetime.strftime(date, "%m-%d")))
+            normals.append((tmin,tavg,tmax))
+
+        ```
     * Load the list of daily normals into a Pandas DataFrame and set the index equal to the date.
 
-    ```python
-     
-    # Load the previous query results into a Pandas DataFrame and add the `trip_dates` range as the `date` index
-    normals_DF = pd.DataFrame(normals, columns=['tmin', 'tavg', 'tmax'], index=dates)  
+        ```python
 
-    ```
+        # Load the previous query results into a Pandas DataFrame and add the `trip_dates` range as the `date` index
+        normals_DF = pd.DataFrame(normals, columns=['tmin', 'tavg', 'tmax'], index=dates)  
+
+        ```
 
     * Use Pandas to plot an area plot (`stacked=False`) for the daily normals.
 
-    ```python
-    # Plot the daily normals as an area plot with `stacked=False`
-    fig, ax = plt.subplots(figsize=(10,6))
-    _=normals_DF.plot.area(ax=ax, stacked=False, alpha=0.4)
-    _=plt.xticks(range(len(dates)), dates, rotation=45, ha='right')
-    _=plt.xlim((0,len(dates)-1))
-    _=plt.ylabel("Temperature ($^\circ F$)")
-    _=plt.title(f"Daily Normals of Temperature\non Trip Dates", fontsize=20, y=1)
-    _=plt.tight_layout()
-    _= plt.savefig('../Images/temperature_historical.png', bbox_inches = "tight" )
-    ```
+        ```python
+        # Plot the daily normals as an area plot with `stacked=False`
+        fig, ax = plt.subplots(figsize=(10,6))
+        _=normals_DF.plot.area(ax=ax, stacked=False, alpha=0.4)
+        _=plt.xticks(range(len(dates)), dates, rotation=45, ha='right')
+        _=plt.xlim((0,len(dates)-1))
+        _=plt.ylabel("Temperature ($^\circ F$)")
+        _=plt.title(f"Daily Normals of Temperature\non Trip Dates", fontsize=20, y=1)
+        _=plt.tight_layout()
+        _= plt.savefig('../Images/temperature_historical.png', bbox_inches = "tight" )
+        ```
 
-    ![daily-normals](Images/temperature_historical.png)
+        ![daily-normals](Images/temperature_historical.png)
 
 
