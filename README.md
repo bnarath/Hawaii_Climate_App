@@ -606,28 +606,28 @@ Now that we have completed your initial analysis, let's design a Flask API based
 
 * Calculate the total rainfall per weather station using the previous year's matching dates.
 
-    ```python
-        # Calculate the total amount of rainfall per weather station for your trip dates using the previous year's matching dates.
-        # Sort this in descending order by precipitation amount and list the station, name, latitude, longitude, and elevation
-        prev_year_start_date = '2017-04-01'
-        prev_year_end_date = '2017-04-10'
+```python
+    # Calculate the total amount of rainfall per weather station for your trip dates using the previous year's matching dates.
+    # Sort this in descending order by precipitation amount and list the station, name, latitude, longitude, and elevation
+    prev_year_start_date = '2017-04-01'
+    prev_year_end_date = '2017-04-10'
 
-        total_prcp_in_stations = session.query(Measurement.station,  func.sum(Measurement.prcp).label('Total_prcp')).\
-        filter(\
-               (Measurement.date<=prev_year_end_date) &\
-              (Measurement.date>=prev_year_start_date)).\
-        group_by(Measurement.station).order_by(func.avg(Measurement.prcp).desc()).subquery()
+    total_prcp_in_stations = session.query(Measurement.station,  func.sum(Measurement.prcp).label('Total_prcp')).\
+    filter(\
+           (Measurement.date<=prev_year_end_date) &\
+          (Measurement.date>=prev_year_start_date)).\
+    group_by(Measurement.station).order_by(func.avg(Measurement.prcp).desc()).subquery()
 
 
-        #Note that isouter=True makes the join as left join
-        #The isouter=True flag will produce a LEFT OUTER JOIN which is the same as a LEFT JOIN
-        #Ref: https://stackoverflow.com/questions/39619353/how-to-perform-a-left-join-in-sqlalchemy
-        result = session.query(total_prcp_in_stations.c.station, Station.name, Station.latitude, Station.longitude, Station.elevation, total_prcp_in_stations.c.Total_prcp).\
-        join(Station, Station.station == total_prcp_in_stations.c.station, isouter=True).all()
+    #Note that isouter=True makes the join as left join
+    #The isouter=True flag will produce a LEFT OUTER JOIN which is the same as a LEFT JOIN
+    #Ref: https://stackoverflow.com/questions/39619353/how-to-perform-a-left-join-in-sqlalchemy
+    result = session.query(total_prcp_in_stations.c.station, Station.name, Station.latitude, Station.longitude, Station.elevation, total_prcp_in_stations.c.Total_prcp).\
+    join(Station, Station.station == total_prcp_in_stations.c.station, isouter=True).all()
 
-        #Display
-        pd.DataFrame(result, columns=['station', 'name', 'latitude', 'longitude', 'elevation', 'Total_prcp'])    
-    ```
+    #Display
+    pd.DataFrame(result, columns=['station', 'name', 'latitude', 'longitude', 'elevation', 'Total_prcp'])    
+```
     
     ![daily_prcp_avg](Images/daily_prcp_total.png)
 
@@ -635,7 +635,7 @@ Now that we have completed your initial analysis, let's design a Flask API based
 
     * `daily_normals` will calculate the daily normals for a specific date. This date string will be in the format `%m-%d`. Be sure to use all historic TOBS that match that date string.
 
-    ```python
+        ```python
         # Create a query that will calculate the daily normals 
         # (i.e. the averages for tmin, tmax, and tavg for all historic data matching a specific month and day)
 
@@ -652,50 +652,50 @@ Now that we have completed your initial analysis, let's design a Flask API based
 
             sel = [func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)]
             return session.query(*sel).filter(func.strftime("%m-%d", Measurement.date) == date).all()
-    ```
+        ```
 
     * Create a list of dates for your trip in the format `%m-%d`. Use the `daily_normals` function to calculate the normals for each date string and append the results to a list.
 
     ```python
-        # calculate the daily normals for your trip
-        # push each tuple of calculations into a list called `normals`
+    # calculate the daily normals for your trip
+    # push each tuple of calculations into a list called `normals`
 
-        # Set the start and end date of the trip
-        # Use the start and end date to create a range of dates
-        # Stip off the year and save a list of %m-%d strings
-        # Loop through the list of %m-%d strings and calculate the normals for each date
+    # Set the start and end date of the trip
+    # Use the start and end date to create a range of dates
+    # Stip off the year and save a list of %m-%d strings
+    # Loop through the list of %m-%d strings and calculate the normals for each date
 
-        normals = []
-        delta = dt.datetime.strptime(prev_year_end_date, "%Y-%m-%d") - dt.datetime.strptime(prev_year_start_date, "%Y-%m-%d")
-        dates = []
-        for i in range(delta.days+1):
-            date = dt.datetime.strptime(prev_year_start_date, "%Y-%m-%d") + dt.timedelta(days=i)
-            dates.append(dt.datetime.strftime(date, "%Y-%m-%d"))
-            tmin,tavg,tmax = np.ravel(daily_normals(dt.datetime.strftime(date, "%m-%d")))
-            normals.append((tmin,tavg,tmax))
+    normals = []
+    delta = dt.datetime.strptime(prev_year_end_date, "%Y-%m-%d") - dt.datetime.strptime(prev_year_start_date, "%Y-%m-%d")
+    dates = []
+    for i in range(delta.days+1):
+        date = dt.datetime.strptime(prev_year_start_date, "%Y-%m-%d") + dt.timedelta(days=i)
+        dates.append(dt.datetime.strftime(date, "%Y-%m-%d"))
+        tmin,tavg,tmax = np.ravel(daily_normals(dt.datetime.strftime(date, "%m-%d")))
+        normals.append((tmin,tavg,tmax))
     
     ```
     * Load the list of daily normals into a Pandas DataFrame and set the index equal to the date.
 
     ```python
      
-        # Load the previous query results into a Pandas DataFrame and add the `trip_dates` range as the `date` index
-        normals_DF = pd.DataFrame(normals, columns=['tmin', 'tavg', 'tmax'], index=dates)  
-        
+    # Load the previous query results into a Pandas DataFrame and add the `trip_dates` range as the `date` index
+    normals_DF = pd.DataFrame(normals, columns=['tmin', 'tavg', 'tmax'], index=dates)  
+
     ```
 
     * Use Pandas to plot an area plot (`stacked=False`) for the daily normals.
 
     ```python
-        # Plot the daily normals as an area plot with `stacked=False`
-        fig, ax = plt.subplots(figsize=(10,6))
-        _=normals_DF.plot.area(ax=ax, stacked=False, alpha=0.4)
-        _=plt.xticks(range(len(dates)), dates, rotation=45, ha='right')
-        _=plt.xlim((0,len(dates)-1))
-        _=plt.ylabel("Temperature ($^\circ F$)")
-        _=plt.title(f"Daily Normals of Temperature\non Trip Dates", fontsize=20, y=1)
-        _=plt.tight_layout()
-        _= plt.savefig('../Images/temperature_historical.png', bbox_inches = "tight" )
+    # Plot the daily normals as an area plot with `stacked=False`
+    fig, ax = plt.subplots(figsize=(10,6))
+    _=normals_DF.plot.area(ax=ax, stacked=False, alpha=0.4)
+    _=plt.xticks(range(len(dates)), dates, rotation=45, ha='right')
+    _=plt.xlim((0,len(dates)-1))
+    _=plt.ylabel("Temperature ($^\circ F$)")
+    _=plt.title(f"Daily Normals of Temperature\non Trip Dates", fontsize=20, y=1)
+    _=plt.tight_layout()
+    _= plt.savefig('../Images/temperature_historical.png', bbox_inches = "tight" )
     ```
 
     ![daily-normals](Images/temperature_historical.png)
