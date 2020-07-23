@@ -309,99 +309,99 @@ Now that we have completed your initial analysis, let's design a Flask API based
       ```
 * `/api/v1.0/stations`
   * Return a JSON list of stations from the dataset.
-  ```python
-    @app.route('/api/v1.0/stations')
-    def stations():
-        try:
-            session, Measurement, Station =  sqlite_create_session(relative_db_path)
-            station_list = get_stations(session,Measurement, Station)
-        except:
-            return "Server is not able to respond. Please try after some time", 404
-        print("GET request at /api/v1.0/stations")
-        return jsonify(station_list)
-  ```
+      ```python
+        @app.route('/api/v1.0/stations')
+        def stations():
+            try:
+                session, Measurement, Station =  sqlite_create_session(relative_db_path)
+                station_list = get_stations(session,Measurement, Station)
+            except:
+                return "Server is not able to respond. Please try after some time", 404
+            print("GET request at /api/v1.0/stations")
+            return jsonify(station_list)
+      ```
 
 * `/api/v1.0/tobs`
   * Query the dates and temperature observations of the most active station for the last year of data.
   * Return a JSON list of temperature observations (TOBS) for the previous year.
-  ```python
-    @app.route('/api/v1.0/tobs')
-    def tobs_for_ma():
-    try:
-        session, Measurement, Station =  sqlite_create_session(relative_db_path)
-        most_active_station_date_tobs = get_most_active_station_tobs(session,Measurement)
-    except:
-        return "Server is not able to respond. Please try after some time", 404
-    print("GET request at /api/v1.0/tobs")
-    return jsonify(most_active_station_date_tobs)
-  ```
+      ```python
+        @app.route('/api/v1.0/tobs')
+        def tobs_for_ma():
+        try:
+            session, Measurement, Station =  sqlite_create_session(relative_db_path)
+            most_active_station_date_tobs = get_most_active_station_tobs(session,Measurement)
+        except:
+            return "Server is not able to respond. Please try after some time", 404
+        print("GET request at /api/v1.0/tobs")
+        return jsonify(most_active_station_date_tobs)
+      ```
 
 * `/api/v1.0/<start>` and `/api/v1.0/<start>/<end>`
   * Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
   * When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.
   * When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
-  ```python
-    @app.route('/api/v1.0/<start>')
-    def range_data_start(start):
-        try:
-            session, Measurement, Station =  sqlite_create_session(relative_db_path)
-            start_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date).limit(1).scalar(), "%Y-%m-%d")
-            end_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date.desc()).limit(1).scalar(), "%Y-%m-%d")
-        except:
-            return "Server is not able to respond. Please try after some time", 404
-
-        if start is None:
-            return "Enter a start date", 404
-        else:
-            #Parse the data
-            try:
-                start_date = dt.datetime.strptime(start, "%Y-%m-%d")
-            except:
-                return "Enter a correct start date in the Year-Month-Day format eg. 2016-08-23", 404
-
-            #Date out of range
-            if (start_date<start_date_in_the_data):
-                return  "We have data between 2010-01-01 and 2017-08-23. Enter start date accordingly", 404
-
-            #Retrieve the summary
+      ```python
+        @app.route('/api/v1.0/<start>')
+        def range_data_start(start):
             try:
                 session, Measurement, Station =  sqlite_create_session(relative_db_path)
-                return get_the_agg(session, Measurement, start_date, end_date_in_the_data)
-
+                start_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date).limit(1).scalar(), "%Y-%m-%d")
+                end_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date.desc()).limit(1).scalar(), "%Y-%m-%d")
             except:
                 return "Server is not able to respond. Please try after some time", 404
 
+            if start is None:
+                return "Enter a start date", 404
+            else:
+                #Parse the data
+                try:
+                    start_date = dt.datetime.strptime(start, "%Y-%m-%d")
+                except:
+                    return "Enter a correct start date in the Year-Month-Day format eg. 2016-08-23", 404
 
-    @app.route('/api/v1.0/<start>/<end>')
-    def range_data_start_end(start,end):
-        try:
-            session, Measurement, Station =  sqlite_create_session(relative_db_path)
-            start_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date).limit(1).scalar(), "%Y-%m-%d")
-            end_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date.desc()).limit(1).scalar(), "%Y-%m-%d")
-        except:
-            return "Server is not able to respond. Please try after some time", 404
+                #Date out of range
+                if (start_date<start_date_in_the_data):
+                    return  "We have data between 2010-01-01 and 2017-08-23. Enter start date accordingly", 404
 
-        if start is None:
-            return "Enter a start date", 404
-        else:
-            #Parse the data
+                #Retrieve the summary
+                try:
+                    session, Measurement, Station =  sqlite_create_session(relative_db_path)
+                    return get_the_agg(session, Measurement, start_date, end_date_in_the_data)
+
+                except:
+                    return "Server is not able to respond. Please try after some time", 404
+
+
+        @app.route('/api/v1.0/<start>/<end>')
+        def range_data_start_end(start,end):
             try:
-                start_date = dt.datetime.strptime(start, "%Y-%m-%d")
-                end_date = dt.datetime.strptime(end, "%Y-%m-%d")
-            except:
-                return "Enter correct start date and end date in the Year-Month-Day format eg. 2016-08-23/2017-01/22", 404
-
-            #Date out of range
-            if (start_date<start_date_in_the_data) or (end_date>end_date_in_the_data) or (start_date>end_date):
-                return  "We have data between 2010-01-01 and 2017-08-23. Enter start date accordingly. Also, start date <= end date", 404
-
-            #Retrieve the summary
-            try:
-                return get_the_agg(session, Measurement, start_date, end_date_in_the_data, end_date)
-
+                session, Measurement, Station =  sqlite_create_session(relative_db_path)
+                start_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date).limit(1).scalar(), "%Y-%m-%d")
+                end_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date.desc()).limit(1).scalar(), "%Y-%m-%d")
             except:
                 return "Server is not able to respond. Please try after some time", 404
-    ```
+
+            if start is None:
+                return "Enter a start date", 404
+            else:
+                #Parse the data
+                try:
+                    start_date = dt.datetime.strptime(start, "%Y-%m-%d")
+                    end_date = dt.datetime.strptime(end, "%Y-%m-%d")
+                except:
+                    return "Enter correct start date and end date in the Year-Month-Day format eg. 2016-08-23/2017-01/22", 404
+
+                #Date out of range
+                if (start_date<start_date_in_the_data) or (end_date>end_date_in_the_data) or (start_date>end_date):
+                    return  "We have data between 2010-01-01 and 2017-08-23. Enter start date accordingly. Also, start date <= end date", 404
+
+                #Retrieve the summary
+                try:
+                    return get_the_agg(session, Measurement, start_date, end_date_in_the_data, end_date)
+
+                except:
+                    return "Server is not able to respond. Please try after some time", 404
+        ```
 
 
 ## Codebase for flask is [here](Code/app.py)
