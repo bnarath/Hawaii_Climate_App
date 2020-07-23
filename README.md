@@ -534,8 +534,9 @@ Now that we have completed your initial analysis, let's design a Flask API based
         ```diff
            Ttest_indResult(statistic=31.35503692096242, pvalue=4.193529835915755e-187)
         ```
-     - **As p-value is < 0.05, we REJECT the null hypothesis (which states both the means are same)**
-     - **The mean temperature in June is statistically different (higher) than that of December**
+        **As p-value is < 0.05, we REJECT the null hypothesis (which states both the means are same)**
+        
+        **The mean temperature in June is statistically different (higher) than that of December**
 
 ### Temperature Analysis II
 
