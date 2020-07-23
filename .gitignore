@@ -1,5 +1,8 @@
 #Custom
 config.py
+Code/Resources/hawaii_*
+Resources/hawaii_*
+sqlalchemy_grading_rubric.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
