@@ -81,6 +81,7 @@ Establishing a session with the database involves the following steps
 
        #via Base class
        Base.metadata.tables
+       Base.classes.keys() #To view mapped class names
        Base.classes.measurement.__dict__ #table1
        Base.classes.station.__dict__ #table2
 
@@ -215,7 +216,7 @@ Establishing a session with the database involves the following steps
         'USC00519281'
     ```
     
-  * The tobs statistics of the most active station
+  * The tobs stats of the most active station
   
     ```python
         # Using the station id from the previous query, calculate the lowest temperature recorded, 
@@ -278,46 +279,148 @@ Establishing a session with the database involves the following steps
 
 # Climate App
 
-Now that you have completed your initial analysis, design a Flask API based on the queries that you have just developed.
-
-* Use Flask to create your routes.
-
+Now that we have completed your initial analysis, let's design a Flask API based on the queries that we have just developed.
+ 
 ## Routes
 
 * `/`
-
   * Home page.
-
-  * List all routes that are available.
+  * List all routes that are available [A separate html is created linked to basic styling]
+  
+      ```python
+        @app.route('/')
+        def home_page():
+            return render_template('index.html', name='home_page')
+      ```
 
 * `/api/v1.0/precipitation`
-
   * Convert the query results to a dictionary using `date` as the key and `prcp` as the value.
-
   * Return the JSON representation of your dictionary.
-
+      ```python
+        @app.route('/api/v1.0/precipitation')
+        def precipitation():
+        try:
+            session, Measurement, Station =  sqlite_create_session(relative_db_path)
+            date_prcp_avg_dict = date_prcp_avg_last_n(session, Measurement, Days=366)
+        except:
+            return "Server is not able to respond. Please try after some time", 404
+        print("GET request at /api/v1.0/precipitation")
+        return jsonify(date_prcp_avg_dict)
+      ```
 * `/api/v1.0/stations`
-
   * Return a JSON list of stations from the dataset.
+  ```python
+    @app.route('/api/v1.0/stations')
+    def stations():
+        try:
+            session, Measurement, Station =  sqlite_create_session(relative_db_path)
+            station_list = get_stations(session,Measurement, Station)
+        except:
+            return "Server is not able to respond. Please try after some time", 404
+        print("GET request at /api/v1.0/stations")
+        return jsonify(station_list)
+  ```
 
 * `/api/v1.0/tobs`
   * Query the dates and temperature observations of the most active station for the last year of data.
-  
   * Return a JSON list of temperature observations (TOBS) for the previous year.
+  ```python
+    @app.route('/api/v1.0/tobs')
+    def tobs_for_ma():
+    try:
+        session, Measurement, Station =  sqlite_create_session(relative_db_path)
+        most_active_station_date_tobs = get_most_active_station_tobs(session,Measurement)
+    except:
+        return "Server is not able to respond. Please try after some time", 404
+    print("GET request at /api/v1.0/tobs")
+    return jsonify(most_active_station_date_tobs)
+  ```
 
 * `/api/v1.0/<start>` and `/api/v1.0/<start>/<end>`
-
   * Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
-
   * When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.
-
   * When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
+  ```python
+    @app.route('/api/v1.0/<start>')
+    def range_data_start(start):
+        try:
+            session, Measurement, Station =  sqlite_create_session(relative_db_path)
+            start_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date).limit(1).scalar(), "%Y-%m-%d")
+            end_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date.desc()).limit(1).scalar(), "%Y-%m-%d")
+        except:
+            return "Server is not able to respond. Please try after some time", 404
 
-## Hints
+        if start is None:
+            return "Enter a start date", 404
+        else:
+            #Parse the data
+            try:
+                start_date = dt.datetime.strptime(start, "%Y-%m-%d")
+            except:
+                return "Enter a correct start date in the Year-Month-Day format eg. 2016-08-23", 404
 
-* You will need to join the station and measurement tables for some of the queries.
+            #Date out of range
+            if (start_date<start_date_in_the_data):
+                return  "We have data between 2010-01-01 and 2017-08-23. Enter start date accordingly", 404
 
-* Use Flask `jsonify` to convert your API data into a valid JSON response object.
+            #Retrieve the summary
+            try:
+                session, Measurement, Station =  sqlite_create_session(relative_db_path)
+                return get_the_agg(session, Measurement, start_date, end_date_in_the_data)
+
+            except:
+                return "Server is not able to respond. Please try after some time", 404
+
+
+    @app.route('/api/v1.0/<start>/<end>')
+    def range_data_start_end(start,end):
+        try:
+            session, Measurement, Station =  sqlite_create_session(relative_db_path)
+            start_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date).limit(1).scalar(), "%Y-%m-%d")
+            end_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date.desc()).limit(1).scalar(), "%Y-%m-%d")
+        except:
+            return "Server is not able to respond. Please try after some time", 404
+
+        if start is None:
+            return "Enter a start date", 404
+        else:
+            #Parse the data
+            try:
+                start_date = dt.datetime.strptime(start, "%Y-%m-%d")
+                end_date = dt.datetime.strptime(end, "%Y-%m-%d")
+            except:
+                return "Enter correct start date and end date in the Year-Month-Day format eg. 2016-08-23/2017-01/22", 404
+
+            #Date out of range
+            if (start_date<start_date_in_the_data) or (end_date>end_date_in_the_data) or (start_date>end_date):
+                return  "We have data between 2010-01-01 and 2017-08-23. Enter start date accordingly. Also, start date <= end date", 404
+
+            #Retrieve the summary
+            try:
+                return get_the_agg(session, Measurement, start_date, end_date_in_the_data, end_date)
+
+            except:
+                return "Server is not able to respond. Please try after some time", 404
+    ```
+
+## Codebase for flask is [here] (Code/app.py)
+
+## Requirements to run the app
+- [requirement](Code/requirements.txt) Especially, pandas need to be updated to a recent version, as I have used a specific sort of an aggregation. Please check [this](https://stackoverflow.com/questions/12589481/multiple-aggregations-of-the-same-column-using-pandas-groupby-agg)
+
+- Please keep the exact folder structure, as HTML and CSS files are linked with the code.
+
+## Design cosiderations
+   * Code is modularized with appropriate functions.
+   * Design takes care of the dynamic changes in the database as the database is queried as and when the user request comes up.
+   * Error handling is done for mistyping.
+   
+## Deployment in heroku
+I have deployed the same code in heroku [here](https://ctd-hawaii-climate-app.herokuapp.com/)
+
+
+
+
 
 - - -
 
