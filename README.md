@@ -413,6 +413,19 @@ Now that we have completed your initial analysis, let's design a Flask API based
 
 - Please keep the exact folder structure, as HTML and CSS files are linked with the code.
 
+- Run as follows:
+
+    ```diff
+       sqlalchemy-challenge$ cd Code/
+       python app.py 
+         * Serving Flask app "app" (lazy loading)
+         * Environment: production
+           WARNING: This is a development server. Do not use it in a production deployment.
+           Use a production WSGI server instead.
+         * Debug mode: off
+         * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+    ```
+
 ## Design cosiderations
 
 * Code is modularized with appropriate functions.
@@ -420,7 +433,7 @@ Now that we have completed your initial analysis, let's design a Flask API based
 * Error handling is done for mistyping.
    
 ## Deployment in heroku
-I have deployed the same code in heroku [here](https://ctd-hawaii-climate-app.herokuapp.com/)
+**I have deployed the same code in heroku [here](https://ctd-hawaii-climate-app.herokuapp.com/)**
 
 
 - - -
