@@ -403,10 +403,13 @@ Now that we have completed your initial analysis, let's design a Flask API based
                 return "Server is not able to respond. Please try after some time", 404
     ```
 
-## Codebase for flask is [here] (Code/app.py)
+
+## Codebase for flask is [here](Code/app.py)
+
 
 ## Requirements to run the app
-- [requirement](Code/requirements.txt) Especially, pandas need to be updated to a recent version, as I have used a specific sort of an aggregation. Please check [this](https://stackoverflow.com/questions/12589481/multiple-aggregations-of-the-same-column-using-pandas-groupby-agg)
+
+- Please follow the package requirement file [here](Code/requirements.txt). Especially, pandas need to be updated to a recent version, as I have used a specific aggregation method. Please check [this](https://stackoverflow.com/questions/12589481/multiple-aggregations-of-the-same-column-using-pandas-groupby-agg) for further details.
 
 - Please keep the exact folder structure, as HTML and CSS files are linked with the code.
 
@@ -417,9 +420,6 @@ Now that we have completed your initial analysis, let's design a Flask API based
    
 ## Deployment in heroku
 I have deployed the same code in heroku [here](https://ctd-hawaii-climate-app.herokuapp.com/)
-
-
-
 
 
 - - -
