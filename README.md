@@ -414,9 +414,10 @@ Now that we have completed your initial analysis, let's design a Flask API based
 - Please keep the exact folder structure, as HTML and CSS files are linked with the code.
 
 ## Design cosiderations
-   * Code is modularized with appropriate functions.
-   * Design takes care of the dynamic changes in the database as the database is queried as and when the user request comes up.
-   * Error handling is done for mistyping.
+
+* Code is modularized with appropriate functions.
+* Design takes care of the dynamic changes in the database as the database is queried as and when the user request comes up.
+* Error handling is done for mistyping.
    
 ## Deployment in heroku
 I have deployed the same code in heroku [here](https://ctd-hawaii-climate-app.herokuapp.com/)
