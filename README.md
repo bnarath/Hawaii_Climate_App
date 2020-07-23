@@ -434,6 +434,7 @@ Now that we have completed your initial analysis, let's design a Flask API based
    
 ## Deployment in heroku
 **I have deployed the same code in heroku [here](https://ctd-hawaii-climate-app.herokuapp.com/)**
+- It might take a few seconds to load initially, afterwards, it should be smooth!
 
 
 - - -
