@@ -48,6 +48,8 @@ As a cherry on top, SQLite comes as preinstalled in recent MAC OS versions.
 
 Because of all of these advantages, SQLite is chosen as the DB for this project.
 
+## Codebase for Database connection, Data retrieval, Preprocessing and Analysis is [here](Code/climate_analysis.ipynb)
+
 ## Database connection & data retrieval
 
 Establishing a session with the database involves the following steps
@@ -404,7 +406,7 @@ Now that we have completed your initial analysis, let's design a Flask API based
       ```
 
 
-## Codebase for flask is [here](Code/app.py)
+## Codebase for flask  app is [here](Code/app.py)
 
 
 ## Requirements to run the app
