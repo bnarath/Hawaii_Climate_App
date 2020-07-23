@@ -488,7 +488,7 @@ Now that we have completed your initial analysis, let's design a Flask API based
       ```
       ![temperature_june_dec_time_series](Images/temperature_june_dec_time_series.png)
   
-  - Also, plot histograms to splot the difference
+  - Also, plot histograms to spot the difference
       ```python
         fig, ax = plt.subplots(figsize=(10,6))
         _=Combined_DF.hist(column = ['Temp_June'], \
