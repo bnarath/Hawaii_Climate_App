@@ -121,42 +121,49 @@ def home_page():
 
 @app.route('/api/v1.0/precipitation')
 def precipitation():
+    print("GET request at /api/v1.0/precipitation")
     try:
         session, Measurement, Station =  sqlite_create_session(relative_db_path)
         date_prcp_avg_dict = date_prcp_avg_last_n(session, Measurement, Days=366)
         ### Close the session
         session.close()
     except:
+        ### Close the session
+        session.close()
         return "Server is not able to respond. Please try after some time", 404
-    print("GET request at /api/v1.0/precipitation")
     return jsonify(date_prcp_avg_dict)
 
 @app.route('/api/v1.0/stations')
 def stations():
+    print("GET request at /api/v1.0/stations")
     try:
         session, Measurement, Station =  sqlite_create_session(relative_db_path)
         station_list = get_stations(session,Measurement, Station)
         ### Close the session
         session.close()
     except:
+        ### Close the session
+        session.close()
         return "Server is not able to respond. Please try after some time", 404
-    print("GET request at /api/v1.0/stations")
     return jsonify(station_list)
 
 @app.route('/api/v1.0/tobs')
 def tobs_for_ma():
+    print("GET request at /api/v1.0/tobs")
     try:
         session, Measurement, Station =  sqlite_create_session(relative_db_path)
         most_active_station_date_tobs = get_most_active_station_tobs(session,Measurement)
         ### Close the session
         session.close()
     except:
+        ### Close the session
+        session.close()
         return "Server is not able to respond. Please try after some time", 404
-    print("GET request at /api/v1.0/tobs")
     return jsonify(most_active_station_date_tobs)
 
 @app.route('/api/v1.0/<start>')
 def range_data_start(start):
+    print(f"GET request at /api/v1.0/{start}")
     try:
         session, Measurement, Station =  sqlite_create_session(relative_db_path)
         start_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date).limit(1).scalar(), "%Y-%m-%d")
@@ -164,6 +171,8 @@ def range_data_start(start):
         ### Close the session
         session.close()
     except:
+        ### Close the session
+        session.close()
         return "Server is not able to respond. Please try after some time", 404
 
     if start is None:
@@ -188,11 +197,14 @@ def range_data_start(start):
             return agg_result
 
         except:
+            ### Close the session
+            session.close()
             return "Server is not able to respond. Please try after some time", 404
 
 
 @app.route('/api/v1.0/<start>/<end>')
 def range_data_start_end(start,end):
+    print(f"GET request at /api/v1.0/{start}/{end}")
     try:
         session, Measurement, Station =  sqlite_create_session(relative_db_path)
         start_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date).limit(1).scalar(), "%Y-%m-%d")
@@ -200,6 +212,8 @@ def range_data_start_end(start,end):
         ### Close the session
         session.close()
     except:
+        ### Close the session
+        session.close()
         return "Server is not able to respond. Please try after some time", 404
 
     if start is None:
@@ -218,12 +232,15 @@ def range_data_start_end(start,end):
         
         #Retrieve the summary
         try:
+            session, Measurement, Station =  sqlite_create_session(relative_db_path)
             agg_result = get_the_agg(session, Measurement, start_date, end_date_in_the_data, end_date)
             ### Close the session
             session.close()
             return agg_result
 
         except:
+            ### Close the session
+            session.close()
             return "Server is not able to respond. Please try after some time", 404
 
 if __name__== "__main__":
