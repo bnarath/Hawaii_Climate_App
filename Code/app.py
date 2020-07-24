@@ -124,6 +124,8 @@ def precipitation():
     try:
         session, Measurement, Station =  sqlite_create_session(relative_db_path)
         date_prcp_avg_dict = date_prcp_avg_last_n(session, Measurement, Days=366)
+        ### Close the session
+        session.close()
     except:
         return "Server is not able to respond. Please try after some time", 404
     print("GET request at /api/v1.0/precipitation")
@@ -134,6 +136,8 @@ def stations():
     try:
         session, Measurement, Station =  sqlite_create_session(relative_db_path)
         station_list = get_stations(session,Measurement, Station)
+        ### Close the session
+        session.close()
     except:
         return "Server is not able to respond. Please try after some time", 404
     print("GET request at /api/v1.0/stations")
@@ -144,6 +148,8 @@ def tobs_for_ma():
     try:
         session, Measurement, Station =  sqlite_create_session(relative_db_path)
         most_active_station_date_tobs = get_most_active_station_tobs(session,Measurement)
+        ### Close the session
+        session.close()
     except:
         return "Server is not able to respond. Please try after some time", 404
     print("GET request at /api/v1.0/tobs")
@@ -155,6 +161,8 @@ def range_data_start(start):
         session, Measurement, Station =  sqlite_create_session(relative_db_path)
         start_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date).limit(1).scalar(), "%Y-%m-%d")
         end_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date.desc()).limit(1).scalar(), "%Y-%m-%d")
+        ### Close the session
+        session.close()
     except:
         return "Server is not able to respond. Please try after some time", 404
 
@@ -174,7 +182,10 @@ def range_data_start(start):
         #Retrieve the summary
         try:
             session, Measurement, Station =  sqlite_create_session(relative_db_path)
-            return get_the_agg(session, Measurement, start_date, end_date_in_the_data)
+            agg_result = get_the_agg(session, Measurement, start_date, end_date_in_the_data)
+            ### Close the session
+            session.close()
+            return agg_result
 
         except:
             return "Server is not able to respond. Please try after some time", 404
@@ -186,6 +197,8 @@ def range_data_start_end(start,end):
         session, Measurement, Station =  sqlite_create_session(relative_db_path)
         start_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date).limit(1).scalar(), "%Y-%m-%d")
         end_date_in_the_data = dt.datetime.strptime(session.query(Measurement.date).order_by(Measurement.date.desc()).limit(1).scalar(), "%Y-%m-%d")
+        ### Close the session
+        session.close()
     except:
         return "Server is not able to respond. Please try after some time", 404
 
@@ -205,7 +218,10 @@ def range_data_start_end(start,end):
         
         #Retrieve the summary
         try:
-            return get_the_agg(session, Measurement, start_date, end_date_in_the_data, end_date)
+            agg_result = get_the_agg(session, Measurement, start_date, end_date_in_the_data, end_date)
+            ### Close the session
+            session.close()
+            return agg_result
 
         except:
             return "Server is not able to respond. Please try after some time", 404
