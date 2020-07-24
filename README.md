@@ -307,6 +307,8 @@ Now that we have completed your initial analysis, let's design a Flask API based
             ### Close the session
             session.close()
         except:
+            ### Close the session
+            session.close()
             return "Server is not able to respond. Please try after some time", 404
         print("GET request at /api/v1.0/precipitation")
         return jsonify(date_prcp_avg_dict)
@@ -322,6 +324,8 @@ Now that we have completed your initial analysis, let's design a Flask API based
                 ### Close the session
                 session.close()
             except:
+                ### Close the session
+                session.close()
                 return "Server is not able to respond. Please try after some time", 404
             print("GET request at /api/v1.0/stations")
             return jsonify(station_list)
@@ -339,6 +343,8 @@ Now that we have completed your initial analysis, let's design a Flask API based
             ### Close the session
             session.close()
         except:
+            ### Close the session
+            session.close()
             return "Server is not able to respond. Please try after some time", 404
         print("GET request at /api/v1.0/tobs")
         return jsonify(most_active_station_date_tobs)
@@ -358,6 +364,8 @@ Now that we have completed your initial analysis, let's design a Flask API based
                 ### Close the session
                 session.close()
             except:
+                ### Close the session
+                session.close()
                 return "Server is not able to respond. Please try after some time", 404
 
             if start is None:
@@ -382,6 +390,8 @@ Now that we have completed your initial analysis, let's design a Flask API based
                     return agg_result
 
                 except:
+                    ### Close the session
+                    session.close()
                     return "Server is not able to respond. Please try after some time", 404
 
 
@@ -412,12 +422,15 @@ Now that we have completed your initial analysis, let's design a Flask API based
 
                 #Retrieve the summary
                 try:
+                    session, Measurement, Station =  sqlite_create_session(relative_db_path)
                     agg_result = get_the_agg(session, Measurement, start_date, end_date_in_the_data, end_date)
                     ### Close the session
                     session.close()
                     return agg_result
 
                 except:
+                    ### Close the session
+                    session.close()
                     return "Server is not able to respond. Please try after some time", 404
       ```
 
