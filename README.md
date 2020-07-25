@@ -457,7 +457,7 @@ Now that we have completed your initial analysis, let's design a Flask API based
          * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
     ```
 
-## Design cosiderations
+## Design considerations
 
 * Code is modularized with appropriate functions.
 * Design takes care of the dynamic changes in the database as the database is queried as and when the user request comes up.
